@@ -145,8 +145,7 @@
           <div class="flex flex-col -space-y-1">
             <span class="logo-font text-2xl font-bold tracking-tight">Topopt<span
                 class="text-slate-400">Comec</span></span>
-            <span class="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Compliant Mechanism
-              Design</span>
+            <span class="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Topology Optimization for Compliant Mechanisms</span>
           </div>
         </a>
       </div>
@@ -676,14 +675,14 @@
 
         <div class="lg:col-span-3 space-y-6">
           <!-- Step 1 -->
-          <div class="gradient-border">
+           <div class="gradient-border max-w-full">
             <div class="p-6">
               <div class="flex items-center justify-between mb-4">
                 <span class="text-xs font-mono text-slate-500">STEP 01 — CLONE REPOSITORY</span>
-                <i data-lucide="copy" class="w-4 h-4 text-slate-600 cursor-pointer hover:text-cyan-400" 
+                <i data-lucide="copy" class="w-4 h-4 text-slate-600 cursor-pointer hover:text-cyan-400"
                   onclick="copyCode(this, 'git clone https://github.com/ninja7v/TopoptComec.git')"></i>
               </div>
-              <code class="text-emerald-400 font-mono text-sm block overflow-x-auto whitespace-nowrap">
+              <code class="text-emerald-400 font-mono text-sm block overflow-x-auto whitespace-nowrap w-full">
                 git clone https://github.com/ninja7v/TopoptComec.git <br>
                 cd TopoptComec
               </code>
@@ -691,14 +690,14 @@
           </div>
 
           <!-- Step 2 -->
-          <div class="gradient-border">
+           <div class="gradient-border max-w-full">
             <div class="p-6">
               <div class="flex items-center justify-between mb-4">
                 <span class="text-xs font-mono text-slate-500">STEP 02 — INSTALL DEPENDENCIES</span>
                 <i data-lucide="copy" class="w-4 h-4 text-slate-600 cursor-pointer hover:text-cyan-400"
                   onclick="copyCode(this, 'pip install -r requirements.txt')"></i>
               </div>
-              <code class="text-emerald-400 font-mono text-sm block">
+              <code class="text-emerald-400 font-mono text-sm block overflow-x-auto whitespace-nowrap w-full">
                 pip install -r requirements.txt
               </code>
             </div>
@@ -713,11 +712,12 @@
               <div class="grid sm:grid-cols-2 gap-4">
                 <div class="bg-indigo-500/5 border border-indigo-500/20 p-4 rounded-xl">
                   <div class="text-[10px] font-mono text-indigo-400 mb-2">GUI MODE</div>
-                  <code class="text-indigo-300 font-mono text-xs">python main.py</code>
+                  <code class="text-indigo-300 font-mono text-xs block overflow-x-auto">python main.py</code>
                 </div>
                 <div class="bg-cyan-500/5 border border-cyan-500/20 p-4 rounded-xl">
                   <div class="text-[10px] font-mono text-cyan-400 mb-2">CLI PRESET</div>
-                  <code class="text-cyan-300 font-mono text-xs">python main.py -p Gripper_3D</code>
+                  <code
+                    class="text-cyan-300 font-mono text-xs block overflow-x-auto">python main.py -p Gripper_3D</code>
                 </div>
               </div>
             </div>
@@ -729,7 +729,9 @@
 
   <!-- FINAL CTA -->
   <section class="py-32 relative overflow-hidden">
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500/10 to-transparent"></div>
+    <div
+      class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500/10 to-transparent">
+    </div>
     <div class="max-w-4xl mx-auto text-center px-6 relative z-10">
       <h2 class="text-5xl md:text-7xl font-bold tracking-tighter mb-8 logo-font">Start Optimizing.</h2>
       <p class="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
@@ -838,7 +840,7 @@
       navigator.clipboard.writeText(text).then(() => {
         // Save original icon
         const originalIcon = element.getAttribute('data-lucide');
-        
+
         // Change to checkmark
         element.setAttribute('data-lucide', 'check');
         element.classList.replace('text-slate-600', 'text-emerald-400');
