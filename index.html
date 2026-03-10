@@ -1,23 +1,860 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="scroll-smooth">
+
 <head>
   <meta charset="UTF-8">
-  <title>Topopt Comec</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-white text-slate-900">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topopt Comec • Fast Multi-Material Topology Optimization</title>
+  <meta name="description"
+    content="The fastest interactive multi-material topology optimizer for compliant mechanisms. 2D & 3D, GUI + CLI, real engineering speed.">
 
-  <section class="min-h-screen flex flex-col justify-center items-center text-center px-6">
-    <h1 class="text-5xl font-bold mb-6">Topopt Comec V3</h1>
-    <p class="text-xl text-slate-600 mb-8">
-      Fast multi-material topology optimization for compliant mechanisms.
-    </p>
-    <a href="https://github.com/ninja7v/topopt-comec"
-       class="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition">
-       View on GitHub
-    </a>
+  <!-- Scripts & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+    :root {
+      --primary: 165 243 252;
+      --accent: 192 132 252;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .logo-font {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hero-bg {
+      background: radial-gradient(circle at 50% 30%, rgba(165, 243, 252, 0.08) 0%, transparent 70%),
+        linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
+    }
+
+    .glass {
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-hover:hover {
+      transform: translateY(-8px);
+      border-color: rgba(165, 243, 252, 0.4);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-link {
+      position: relative;
+    }
+
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background-color: rgb(165 243 252);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover:after {
+      width: 100%;
+    }
+
+    .section-header {
+      background: linear-gradient(90deg, #67e8f9, #c084fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-border {
+      position: relative;
+      border-radius: 1.5rem;
+      background: linear-gradient(135deg, rgba(165, 243, 252, 0.2), rgba(192, 132, 252, 0.1));
+      padding: 1px;
+    }
+
+    .gradient-border>div {
+      background: #111111;
+      border-radius: 1.5rem;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, transparent, #22d3ee, #a78bfa, transparent);
+      transform: translateX(-50%);
+    }
+
+    .timeline-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 3px solid #22d3ee;
+      background: #0a0a0a;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
+    .timeline-dot.active {
+      background: #22d3ee;
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+
+<body class="bg-[#0a0a0a] text-slate-50 overflow-x-hidden selection:bg-cyan-500/30">
+  <!-- NAVBAR -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
+    <div class="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-x-3">
+        <a href="#" class="flex items-center gap-x-3 group">
+          <img src="images/TopoptComec_logo.svg" alt="TopoptComec Logo"
+            class="w-10 h-10 transition group-hover:rotate-12">
+          <div class="flex flex-col -space-y-1">
+            <span class="logo-font text-2xl font-bold tracking-tight">Topopt<span
+                class="text-slate-400">Comec</span></span>
+            <span class="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Compliant Mechanism
+              Design</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="hidden lg:flex items-center gap-x-8 text-sm font-medium">
+        <a href="#about" class="nav-link text-slate-400 hover:text-white transition">About</a>
+        <a href="#features" class="nav-link text-slate-400 hover:text-white transition">Features</a>
+        <a href="#gallery" class="nav-link text-slate-400 hover:text-white transition">Showcase</a>
+        <a href="#quickstart" class="nav-link text-slate-400 hover:text-white transition">Installation</a>
+        <a href="https://github.com/ninja7v/TopoptComec/wiki" target="_blank"
+          class="nav-link text-slate-400 hover:text-white transition flex items-center gap-1">
+          Wiki <i data-lucide="external-link" class="w-3 h-3"></i>
+        </a>
+      </div>
+
+      <div class="flex items-center gap-x-4">
+        <a href="https://github.com/ninja7v/TopoptComec/releases/tag/v3.0" target="_blank"
+          class="hidden sm:flex items-center gap-x-2 text-slate-400 hover:text-white transition text-sm">
+          <i class="fa-brands fa-github text-lg"></i>
+          <span>v3.0</span>
+        </a>
+        <a href="#quickstart"
+          class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-lg shadow-cyan-500/20 active:scale-95">
+          Get Started
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-bg min-h-screen flex items-center pt-24 pb-16 relative">
+    <div class="max-w-screen-2xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+      <div class="space-y-8">
+        <h1 class="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] logo-font">
+          Design the<br>future of<br><span class="section-header">Motion.</span>
+        </h1>
+
+        <p class="text-xl text-slate-400 max-w-lg leading-relaxed">
+          Create complex compliant mechanisms that move through material deformation. High-performance topology
+          optimization in 2D and 3D.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <a href="#quickstart"
+            class="group flex items-center gap-x-3 bg-white text-slate-950 px-8 py-4 rounded-2xl font-bold transition hover:bg-cyan-50 active:scale-95">
+            <span>Start Designing</span>
+            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition"></i>
+          </a>
+
+          <a href="https://github.com/ninja7v/TopoptComec" target="_blank"
+            class="flex items-center gap-x-3 bg-slate-900/50 border border-slate-800 hover:bg-slate-800 px-8 py-4 rounded-2xl font-semibold transition">
+            <i class="fa-brands fa-github text-xl"></i>
+            <span>Star on GitHub</span>
+          </a>
+        </div>
+
+        <div class="grid grid-cols-3 gap-8 pt-10 border-t border-slate-800">
+          <div>
+            <div class="text-xs font-mono text-slate-500 uppercase tracking-widest mb-1">Performance</div>
+            <div class="text-lg font-bold">Real-time</div>
+          </div>
+          <div>
+            <div class="text-xs font-mono text-slate-500 uppercase tracking-widest mb-1">Materials</div>
+            <div class="text-lg font-bold">Multi-Material</div>
+          </div>
+          <div>
+            <div class="text-xs font-mono text-slate-500 uppercase tracking-widest mb-1">Domain</div>
+            <div class="text-lg font-bold">2D + 3D</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO VISUAL -->
+      <div class="relative group">
+        <div
+          class="absolute -inset-4 bg-gradient-to-tr from-cyan-500/20 to-violet-500/20 rounded-[2.5rem] blur-2xl group-hover:opacity-100 transition duration-1000">
+        </div>
+        <div class="relative bg-slate-900 border border-slate-800 rounded-[2rem] overflow-hidden shadow-2xl">
+          <img src="images/butterfly_movement.gif" alt="Real-time Topology Optimization" class="w-full h-auto">
+          <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 to-transparent p-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-x-3">
+                <div class="flex gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400/50"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400/30"></span>
+                </div>
+                <span class="text-xs font-mono text-cyan-400">OPTIMIZING BIRD MECHANISM...</span>
+              </div>
+              <span class="text-xs text-slate-500">Benchmark: 2.3s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
+  <!-- ABOUT -->
+  <section id="about" class="py-24 bg-[#0a0a0a] relative overflow-hidden">
+    <div class="max-w-screen-xl mx-auto px-6 relative z-10">
+      <div class="grid lg:grid-cols-2 gap-20 items-center">
+        <div class="space-y-6">
+          <h2 class="text-4xl md:text-5xl font-bold tracking-tight logo-font">What is TopoptComec?</h2>
+          <p class="text-lg text-slate-400 leading-relaxed">
+            Traditionally, machines move using pins, joints, and bearings. <strong>Compliant mechanisms</strong> are
+            different — they achieve motion by bending and deforming their own structure.
+          </p>
+          <p class="text-lg text-slate-400 leading-relaxed">
+            TopoptComec uses advanced <strong>Topology Optimization</strong> to "grow" these mechanisms. You define the
+            space, the forces, and the fixed points; the algorithm then sculpts the most efficient material distribution
+            to perform the task.
+          </p>
+          <ul class="space-y-4 pt-4">
+            <li class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded-full bg-cyan-500/10 flex items-center justify-center">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i>
+              </div>
+              <span class="text-slate-300">Single-piece mechanisms (no assembly needed)</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded-full bg-cyan-500/10 flex items-center justify-center">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i>
+              </div>
+              <span class="text-slate-300">Zero friction, zero wear, zero lubrication</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded-full bg-cyan-500/10 flex items-center justify-center">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-cyan-400"></i>
+              </div>
+              <span class="text-slate-300">Scalable from micro-MEMS to large aerospace parts</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- VERTICAL TIMELINE -->
+        <div class="relative">
+          <!-- Grid: left | center line | right -->
+          <div class="grid" style="grid-template-columns: 1fr 32px 1fr; gap: 0;">
+
+            <!-- Center line (spans all rows) -->
+            <div class="col-start-2 row-start-1 row-end-5 flex justify-center">
+              <div class="w-0.5 h-full bg-gradient-to-b from-cyan-500/0 via-cyan-400 to-violet-400/0"></div>
+            </div>
+
+            <!-- ROW 1: 2021 — Left side -->
+            <div class="col-start-1 row-start-1 pr-6 text-right flex items-center justify-end py-3">
+              <div class="bg-[#111] border border-slate-800 p-4 rounded-2xl">
+                <h3 class="font-bold mb-1">2021</h3>
+                <p class="text-xs text-slate-500">Project began as a personal research tool for compliant mechanisms.
+                </p>
+              </div>
+            </div>
+            <div class="col-start-2 row-start-1 flex items-center justify-center z-10">
+              <div class="timeline-dot" style="position:relative; left:auto; transform:none;"></div>
+            </div>
+            <div class="col-start-3 row-start-1"></div>
+
+            <!-- ROW 2: V1 — Right side -->
+            <div class="col-start-1 row-start-2"></div>
+            <div class="col-start-2 row-start-2 flex items-center justify-center z-10">
+              <div class="timeline-dot" style="position:relative; left:auto; transform:none;"></div>
+            </div>
+            <div class="col-start-3 row-start-2 pl-6 flex items-center py-3 text-left">
+              <a href="https://github.com/ninja7v/TopoptComec/releases/tag/v1.0" target="_blank"
+                class="block bg-[#111] border border-slate-800 p-4 rounded-2xl hover:border-cyan-500/50 transition-all hover:scale-[1.02]">
+                <h3 class="font-bold mb-1">V1 <span class="text-slate-500 text-sm font-normal">Sep 2024</span></h3>
+                <p class="text-xs text-slate-500">First public release with Tkinter GUI, interactive placement, and PNG
+                  export.</p>
+              </a>
+            </div>
+
+            <!-- ROW 3: V2 — Left side -->
+            <div class="col-start-1 row-start-3 pr-6 text-right flex items-center justify-end py-3">
+              <a href="https://github.com/ninja7v/TopoptComec/releases/tag/v2.0" target="_blank"
+                class="block bg-[#111] border border-slate-800 p-4 rounded-2xl hover:border-cyan-500/50 transition-all hover:scale-[1.02]">
+                <h3 class="font-bold mb-1">V2 <span class="text-slate-500 text-sm font-normal">Nov 2025</span></h3>
+                <p class="text-xs text-slate-500">PySide6 UI, live preview, displacement animation, and STL/VTK export.
+                </p>
+              </a>
+            </div>
+            <div class="col-start-2 row-start-3 flex items-center justify-center z-10">
+              <div class="timeline-dot" style="position:relative; left:auto; transform:none;"></div>
+            </div>
+            <div class="col-start-3 row-start-3"></div>
+
+            <!-- ROW 4: V3 — Right side (active) -->
+            <div class="col-start-1 row-start-4"></div>
+            <div class="col-start-2 row-start-4 flex items-center justify-center z-10">
+              <div class="timeline-dot active" style="position:relative; left:auto; transform:none;"></div>
+            </div>
+            <div class="col-start-3 row-start-4 pl-6 flex items-center py-3 text-left">
+              <a href="https://github.com/ninja7v/TopoptComec/releases/tag/v3.0" target="_blank"
+                class="block bg-cyan-500/5 border border-cyan-500/20 p-4 rounded-2xl hover:border-cyan-500/50 transition-all hover:scale-[1.02]">
+                <h3 class="font-bold text-cyan-400 mb-1">V3 <span class="text-slate-400 text-sm font-normal">Mar
+                    2026</span></h3>
+                <p class="text-xs text-slate-400">10x faster optimizer, multi-material, 3MF export, CLI support.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="py-24 bg-[#111111]">
+    <div class="max-w-screen-2xl mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-20 space-y-4">
+        <h2 class="text-5xl font-bold tracking-tight logo-font">Engineered for Performance</h2>
+        <p class="text-slate-400 text-lg">Everything you need to go from concept to optimized 3D-printable mechanism in
+          minutes.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- ⚡ Lightning Fast -->
+        <div class="card-hover bg-[#0a0a0a] border border-slate-800 p-8 rounded-[2rem]">
+          <div class="w-14 h-14 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="zap" class="w-8 h-8 text-cyan-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4">Blazing Fast Solver</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Optimized SIMP method with a 10x performance boost in V3. Real-time 2D synthesis and efficient 3D handling
+            on standard hardware.
+          </p>
+        </div>
+
+        <!-- 🧊 Multi-Material -->
+        <div class="card-hover bg-[#0a0a0a] border border-slate-800 p-8 rounded-[2rem]">
+          <div class="w-14 h-14 bg-violet-500/10 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="layers" class="w-8 h-8 text-violet-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4">Multi-Material</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Design with up to 2 different materials in a single optimization. Mix stiffnesses to achieve precise motion
+            goals.
+          </p>
+        </div>
+
+        <!-- 🌍 True 3D -->
+        <div class="card-hover bg-[#0a0a0a] border border-slate-800 p-8 rounded-[2rem]">
+          <div class="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="box" class="w-8 h-8 text-amber-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4">3D Optimization</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Full 3D design domains, loads, and supports for real-world engineering applications.
+          </p>
+        </div>
+
+        <!-- 🖱️ Intuitive GUI -->
+        <div class="card-hover bg-[#0a0a0a] border border-slate-800 p-8 rounded-[2rem]">
+          <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="mouse-pointer-2" class="w-8 h-8 text-emerald-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4">Interactive UI</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Modern PySide6 interface. Draw domains, place forces, and watch the optimization converge interactively.
+          </p>
+        </div>
+
+        <!-- 📟 CLI + Presets -->
+        <div class="card-hover bg-[#0a0a0a] border border-slate-800 p-8 rounded-[2rem]">
+          <div class="w-14 h-14 bg-rose-500/10 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="terminal" class="w-8 h-8 text-rose-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4">CLI Power</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Generate huge mechanism runs via CLI. Parallelize mechanism creation for maximum efficiency.
+          </p>
+        </div>
+
+        <!-- 📤 Export -->
+        <div class="card-hover bg-[#0a0a0a] border border-slate-800 p-8 rounded-[2rem]">
+          <div class="w-14 h-14 bg-sky-500/10 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="download" class="w-8 h-8 text-sky-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4">CAD-Ready Export</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Export to STL for printing, VTK for ParaView, or the new 3MF format. Seamless workflow.
+          </p>
+        </div>
+
+        <!-- 📊 Built-in analysis -->
+        <div class="card-hover bg-[#0a0a0a] border border-slate-800 p-8 rounded-[2rem]">
+          <div class="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="trending-up" class="w-8 h-8 text-indigo-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4">Built-in Analysis</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Displacement visualization and analysis metrics available in just a few clicks.
+          </p>
+        </div>
+
+        <!-- ⚓ Compliant and rigid -->
+        <div class="card-hover bg-[#0a0a0a] border border-slate-800 p-8 rounded-[2rem]">
+          <div class="w-14 h-14 bg-lime-500/10 rounded-2xl flex items-center justify-center mb-6">
+            <i data-lucide="shield" class="w-8 h-8 text-lime-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-4">Compliant & Rigid</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Who can do more can do less. Design for both compliant and rigid structures.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWCASE -->
+  <section id="gallery" class="py-24 bg-[#080808]">
+    <div class="max-w-screen-2xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div class="space-y-4">
+          <h2 class="text-5xl font-bold tracking-tight logo-font">Mechanism Showcase</h2>
+          <p class="text-slate-400 text-lg">Real results from TopoptComec. Click to toggle between
+            <strong>Design</strong> and <strong>Motion</strong>.
+          </p>
+        </div>
+        <div class="flex gap-4">
+          <button onclick="setGalleryFilter('creation')"
+            class="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 px-5 py-2 rounded-xl text-sm font-semibold transition">Show
+            Optimization</button>
+          <button onclick="setGalleryFilter('movement')"
+            class="bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 px-5 py-2 rounded-xl text-sm font-semibold transition">Show
+            Movement</button>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Force Inverter -->
+        <div class="group relative bg-[#111] rounded-[2rem] overflow-hidden border border-slate-800">
+          <div class="aspect-[4/3] relative">
+            <img id="img-force-inverter" src="images/force-inverter.png"
+              data-creation="images/force-inverter_creation.gif" data-movement="images/force-inverter_movement.gif"
+              data-static="images/force-inverter.png" alt="Force Inverter"
+              class="w-full h-full object-cover transition duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80">
+            </div>
+            <div class="absolute bottom-5 left-5 right-5">
+              <div class="text-white text-lg font-bold">Force Inverter</div>
+              <div class="text-slate-400 text-xs">Classic engineering benchmark</div>
+            </div>
+            <div class="absolute top-4 right-4 flex flex-col gap-2">
+              <button onclick="toggleMedia('force-inverter', 'creation')"
+                class="w-9 h-9 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-cyan-500 transition shadow-xl"
+                title="Watch Optimization">
+                <i data-lucide="play-circle" class="w-4 h-4"></i>
+              </button>
+              <button onclick="toggleMedia('force-inverter', 'movement')"
+                class="w-9 h-9 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-violet-500 transition shadow-xl"
+                title="Watch movement">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bird -->
+        <div class="group relative bg-[#111] rounded-[2rem] overflow-hidden border border-slate-800">
+          <div class="aspect-[4/3] relative">
+            <img id="img-bird" src="images/bird.png" data-creation="images/bird_creation.gif"
+              data-movement="images/bird_movement.gif" data-static="images/bird.png" alt="Bird Mechanism"
+              class="w-full h-full object-cover transition duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80">
+            </div>
+            <div class="absolute bottom-5 left-5 right-5">
+              <div class="text-white text-lg font-bold">Bird Mechanism</div>
+              <div class="text-slate-400 text-xs">Complex organic shape synthesis</div>
+            </div>
+            <div class="absolute top-4 right-4 flex flex-col gap-2">
+              <button onclick="toggleMedia('bird', 'creation')"
+                class="w-9 h-9 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-cyan-500 transition shadow-xl"
+                title="Watch Optimization">
+                <i data-lucide="play-circle" class="w-4 h-4"></i>
+              </button>
+              <button onclick="toggleMedia('bird', 'movement')"
+                class="w-9 h-9 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-violet-500 transition shadow-xl"
+                title="Watch Movement">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Butterfly -->
+        <div class="group relative bg-[#111] rounded-[2rem] overflow-hidden border border-slate-800">
+          <div class="aspect-[4/3] relative">
+            <img id="img-butterfly" src="images/butterfly.png" data-creation="images/butterfly_creation.gif"
+              data-movement="images/butterfly_movement.gif" data-static="images/butterfly.png" alt="Butterfly Mechanism"
+              class="w-full h-full object-cover transition duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80">
+            </div>
+            <div class="absolute bottom-5 left-5 right-5">
+              <div class="text-white text-lg font-bold">Butterfly</div>
+              <div class="text-slate-400 text-xs">Symmetric dual-action compliant wings</div>
+            </div>
+            <div class="absolute top-4 right-4 flex flex-col gap-2">
+              <button onclick="toggleMedia('butterfly', 'creation')"
+                class="w-9 h-9 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-cyan-500 transition shadow-xl"
+                title="Watch Optimization">
+                <i data-lucide="play-circle" class="w-4 h-4"></i>
+              </button>
+              <button onclick="toggleMedia('butterfly', 'movement')"
+                class="w-9 h-9 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-violet-500 transition shadow-xl"
+                title="Watch Movement">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gripper -->
+        <div class="group relative bg-[#111] rounded-[2rem] overflow-hidden border border-slate-800">
+          <div class="aspect-[4/3] relative">
+            <img id="img-gripper" src="images/gripper.png" data-creation="images/gripper_creation.gif"
+              data-movement="images/gripper_movement.gif" data-static="images/gripper.png" alt="Gripper Mechanism"
+              class="w-full h-full object-cover transition duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80">
+            </div>
+            <div class="absolute bottom-5 left-5 right-5">
+              <div class="text-white text-lg font-bold">Gripper</div>
+              <div class="text-slate-400 text-xs">Multi-output compliant mechanism</div>
+            </div>
+            <div class="absolute top-4 right-4 flex flex-col gap-2">
+              <button onclick="toggleMedia('gripper', 'creation')"
+                class="w-9 h-9 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-cyan-500 transition shadow-xl"
+                title="Watch Optimization">
+                <i data-lucide="play-circle" class="w-4 h-4"></i>
+              </button>
+              <button onclick="toggleMedia('gripper', 'movement')"
+                class="w-9 h-9 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-violet-500 transition shadow-xl"
+                title="Watch Movement">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="py-24 bg-[#111111] border-y border-slate-800">
+    <div class="max-w-screen-xl mx-auto px-6">
+      <h2 class="text-4xl md:text-5xl font-bold text-center mb-20 logo-font">Your Design Workflow</h2>
+
+      <div class="grid md:grid-cols-4 gap-12 relative">
+        <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-800 -translate-y-1/2 hidden md:block"></div>
+
+        <!-- Step 1 -->
+        <div class="relative flex flex-col items-center text-center group">
+          <div
+            class="w-16 h-16 bg-[#0a0a0a] border-2 border-slate-800 rounded-2xl flex items-center justify-center mb-8 relative z-10 transition group-hover:border-cyan-500 group-hover:scale-110">
+            <span class="text-2xl font-bold logo-font">1</span>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Define Domain & Constraints</h4>
+          <p class="text-slate-500 text-sm">Set your bounding box, draw regions, place forces, supports, and choose
+            materials.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="relative flex flex-col items-center text-center group">
+          <div
+            class="w-16 h-16 bg-[#0a0a0a] border-2 border-slate-800 rounded-2xl flex items-center justify-center mb-8 relative z-10 transition group-hover:border-cyan-500 group-hover:scale-110">
+            <span class="text-2xl font-bold logo-font">2</span>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Run Optimization</h4>
+          <p class="text-slate-500 text-sm">Hit "Create" and watch the SIMP algorithm sculpt the optimal topology in
+            real time.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="relative flex flex-col items-center text-center group">
+          <div
+            class="w-16 h-16 bg-[#0a0a0a] border-2 border-slate-800 rounded-2xl flex items-center justify-center mb-8 relative z-10 transition group-hover:border-cyan-500 group-hover:scale-110">
+            <span class="text-2xl font-bold logo-font">3</span>
+          </div>
+          <h4 class="font-bold text-lg mb-2">Analyze the Results</h4>
+          <p class="text-slate-500 text-sm">Check watertightness, checkerboard patterns, efficiency, and preview
+            displacement animation.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="relative flex flex-col items-center text-center group">
+          <div
+            class="w-16 h-16 bg-cyan-500 rounded-2xl flex items-center justify-center mb-8 relative z-10 transition group-hover:scale-110">
+            <i data-lucide="check" class="w-8 h-8 text-[#0a0a0a]"></i>
+          </div>
+          <h4 class="font-bold text-lg mb-2 text-cyan-400">Export</h4>
+          <p class="text-slate-500 text-sm">Export your mechanism to STL, VTK, or 3MF for 3D printing, ParaView, or CAD.
+          </p>
+        </div>
+      </div>
+
+      <!-- Workflow Roadmap Image -->
+      <div class="mt-20 relative group">
+        <div
+          class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-violet-500/20 rounded-[2rem] blur-xl opacity-50 group-hover:opacity-100 transition duration-1000">
+        </div>
+        <div class="relative bg-slate-900 border border-slate-800 rounded-[2rem] overflow-hidden">
+          <img src="images/workflow.png" alt="TopoptComec Design Workflow Diagrams" class="w-full h-auto">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK START -->
+  <section id="quickstart" class="py-24 bg-[#080808]">
+    <div class="max-w-screen-2xl mx-auto px-6">
+      <div class="grid lg:grid-cols-5 gap-16 items-start">
+        <div class="lg:col-span-2 space-y-6">
+          <div class="text-xs font-mono text-cyan-400 tracking-widest uppercase">Quick Installation</div>
+          <h2 class="text-5xl font-bold tracking-tight logo-font leading-tight">Zero friction setup.</h2>
+          <p class="text-slate-400 text-lg">
+            No expensive software licenses or complex installations. 100% Python, 100% Open Source.
+          </p>
+          <div class="p-6 bg-slate-900/50 border border-slate-800 rounded-2xl space-y-4">
+            <div class="flex items-center gap-3">
+              <i data-lucide="os-window" class="w-5 h-5 text-slate-500"></i>
+              <span class="text-sm font-medium">Windows, Linux, macOS</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <i data-lucide="package" class="w-5 h-5 text-slate-500"></i>
+              <span class="text-sm font-medium">Python 3.10+ required</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-3 space-y-6">
+          <!-- Step 1 -->
+          <div class="gradient-border">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-mono text-slate-500">STEP 01 — CLONE REPOSITORY</span>
+                <i data-lucide="copy" class="w-4 h-4 text-slate-600 cursor-pointer hover:text-cyan-400" 
+                  onclick="copyCode(this, 'git clone https://github.com/ninja7v/TopoptComec.git')"></i>
+              </div>
+              <code class="text-emerald-400 font-mono text-sm block overflow-x-auto whitespace-nowrap">
+                git clone https://github.com/ninja7v/TopoptComec.git <br>
+                cd TopoptComec
+              </code>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="gradient-border">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-mono text-slate-500">STEP 02 — INSTALL DEPENDENCIES</span>
+                <i data-lucide="copy" class="w-4 h-4 text-slate-600 cursor-pointer hover:text-cyan-400"
+                  onclick="copyCode(this, 'pip install -r requirements.txt')"></i>
+              </div>
+              <code class="text-emerald-400 font-mono text-sm block">
+                pip install -r requirements.txt
+              </code>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="gradient-border">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-mono text-slate-500">STEP 03 — RUN</span>
+              </div>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div class="bg-indigo-500/5 border border-indigo-500/20 p-4 rounded-xl">
+                  <div class="text-[10px] font-mono text-indigo-400 mb-2">GUI MODE</div>
+                  <code class="text-indigo-300 font-mono text-xs">python main.py</code>
+                </div>
+                <div class="bg-cyan-500/5 border border-cyan-500/20 p-4 rounded-xl">
+                  <div class="text-[10px] font-mono text-cyan-400 mb-2">CLI PRESET</div>
+                  <code class="text-cyan-300 font-mono text-xs">python main.py -p Gripper_3D</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="py-32 relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500/10 to-transparent"></div>
+    <div class="max-w-4xl mx-auto text-center px-6 relative z-10">
+      <h2 class="text-5xl md:text-7xl font-bold tracking-tighter mb-8 logo-font">Start Optimizing.</h2>
+      <p class="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
+        Join the next generation of engineers designing high-performance mechanisms with TopoptComec.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+        <a href="https://github.com/ninja7v/TopoptComec" target="_blank"
+          class="w-full sm:w-auto flex items-center justify-center gap-3 bg-white text-slate-950 px-12 py-5 rounded-2xl font-bold text-lg hover:bg-cyan-50 transition active:scale-95 shadow-2xl shadow-cyan-500/20">
+          <i class="fa-brands fa-github text-2xl"></i>
+          <span>GitHub Repository</span>
+        </a>
+        <a href="https://github.com/ninja7v/TopoptComec/wiki" target="_blank"
+          class="w-full sm:w-auto flex items-center justify-center gap-3 bg-slate-900 border border-slate-800 px-12 py-5 rounded-2xl font-bold text-lg hover:bg-slate-800 transition">
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+          <span>Read the Wiki</span>
+        </a>
+      </div>
+
+      <div class="mt-16 text-xs text-slate-600 font-mono uppercase tracking-[0.2em]">
+        MIT Licensed • Open Source • Built for Science
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#080808] py-16 border-t border-slate-900">
+    <div class="max-w-screen-2xl mx-auto px-6">
+      <div class="grid md:grid-cols-4 gap-12 mb-16">
+        <div class="col-span-2 space-y-6">
+          <div class="flex items-center gap-x-3">
+            <img src="images/TopoptComec_logo.svg" alt="Logo" class="w-8 h-8 opacity-80">
+            <span class="logo-font text-xl font-bold tracking-tight">Topopt<span
+                class="text-slate-400">Comec</span></span>
+          </div>
+          <p class="text-slate-500 max-w-xs text-sm leading-relaxed">
+            The interactive topology optimizer for the engineering of compliant mechanisms. Designed for both
+            researchers and practitioners.
+          </p>
+        </div>
+        <div>
+          <h5 class="font-bold mb-6 text-sm uppercase tracking-widest text-slate-400">Project</h5>
+          <ul class="space-y-4 text-sm text-slate-500">
+            <li><a href="https://github.com/ninja7v/TopoptComec" class="hover:text-cyan-400 transition">Source Code</a>
+            </li>
+            <li><a href="https://github.com/ninja7v/TopoptComec/releases"
+                class="hover:text-cyan-400 transition">Releases</a></li>
+            <li><a href="https://github.com/ninja7v/TopoptComec/blob/main/LICENSE.txt"
+                class="hover:text-cyan-400 transition">Licensing</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5 class="font-bold mb-6 text-sm uppercase tracking-widest text-slate-400">Support</h5>
+          <ul class="space-y-4 text-sm text-slate-500">
+            <li><a href="https://github.com/ninja7v/TopoptComec/wiki"
+                class="hover:text-cyan-400 transition">Documentation</a></li>
+            <li><a href="https://github.com/ninja7v/TopoptComec/issues" class="hover:text-cyan-400 transition">Report
+                Bug</a></li>
+            <li><a href="https://github.com/ninja7v" class="hover:text-cyan-400 transition">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-y-4">
+        <div class="text-slate-600 text-xs font-mono">
+          &copy; 2026 TopoptComec • BY <a href="https://github.com/ninja7v"
+            class="text-slate-500 hover:text-white">NINJA7V</a>
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="https://github.com/ninja7v/TopoptComec" target="_blank"
+            class="text-slate-600 hover:text-white transition">
+            <i class="fa-brands fa-github text-xl"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Gallery and Media Control
+    function toggleMedia(id, type) {
+      const img = document.getElementById('img-' + id);
+      const targetSrc = img.getAttribute('data-' + type);
+      const staticSrc = img.getAttribute('data-static');
+
+      // If clicking already active GIF, revert to static
+      if (img.src.includes(targetSrc.split('/').pop())) {
+        img.src = staticSrc;
+      } else {
+        img.src = targetSrc;
+      }
+    }
+
+    function setGalleryFilter(type) {
+      const ids = ['force-inverter', 'bird', 'butterfly', 'gripper'];
+      ids.forEach(id => {
+        const img = document.getElementById('img-' + id);
+        img.src = img.getAttribute('data-' + type);
+      });
+    }
+
+    // Copy to clipboard
+    function copyCode(element, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        // Save original icon
+        const originalIcon = element.getAttribute('data-lucide');
+        
+        // Change to checkmark
+        element.setAttribute('data-lucide', 'check');
+        element.classList.replace('text-slate-600', 'text-emerald-400');
+        lucide.createIcons(); // Refresh the icon
+
+        // Revert after 2 seconds
+        setTimeout(() => {
+          element.setAttribute('data-lucide', originalIcon);
+          element.classList.replace('text-emerald-400', 'text-slate-600');
+          lucide.createIcons();
+        }, 2000);
+      });
+    }
+
+    console.log('%c🚀 TopoptComec Official Site Loaded', 'color:#06b6d4; font-weight:bold; font-size:14px;');
+  </script>
 </body>
+
 </html>
